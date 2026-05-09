@@ -31,10 +31,6 @@ body {
   box-sizing: border-box;
 }
 
-.tool > button:first-child {
-  margin-top: 10px;
-}
-
 h2 {
   margin-bottom: 30px;
 }
@@ -111,29 +107,24 @@ button:hover {
 <div class="container">
 <div class="tool">
 
-<button onclick="goBack()">← Back</button>
-
 <h2>Watermark Tool</h2>
 
 <div class="controls">
 <input type="file" id="upload" multiple>
 
-<!-- MODE -->
 <div class="pill-group" id="modeGroup">
   <div class="pill active" data-value="2">2 Lines</div>
   <div class="pill" data-value="3">3 Lines</div>
 </div>
 
-<!-- COLOR -->
 <div class="pill-group" id="colorGroup">
   <div class="pill active" data-value="white">White</div>
   <div class="pill" data-value="dark">Dark</div>
 </div>
 
-<!-- OPACITY -->
 <div class="pill-group" id="opacityGroup">
   <div class="pill active" data-value="0.05">5%</div>
-  <div class="pill active" data-value="0.1">10%</div>
+  <div class="pill" data-value="0.1">10%</div>
   <div class="pill" data-value="0.35">20%</div>
 </div>
 
@@ -154,11 +145,25 @@ let mode = "2";
 let color = "white";
 let opacity = "0.1"; 
 
-function goBack() {
-  window.location.href = "/CollageTool/";
-}
+/* DRAG & DROP */
+document.addEventListener("dragover", e => e.preventDefault());
 
-/* PILLS */
+document.addEventListener("drop", e => {
+  e.preventDefault();
+
+  const files = e.dataTransfer.files;
+  if (!files || !files.length) return;
+
+  const input = document.getElementById("upload");
+
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  input.files = dt.files;
+
+  generate();
+});
+
+/* MODE HANDLING */
 document.querySelectorAll(".pill-group").forEach(group => {
   group.querySelectorAll(".pill").forEach(pill => {
     pill.onclick = () => {
@@ -188,7 +193,6 @@ function loadImages(files){
 
 /* DRAW */
 function draw(ctx,img,W,H){
-  // white background (fix transparency)
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, W, H);
 
