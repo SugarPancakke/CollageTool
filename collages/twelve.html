@@ -35,10 +35,6 @@ body {
   box-sizing: border-box;
 }
 
-.tool > button:first-child {
-  margin-top: 10px;
-}
-
 h2 {
   margin-bottom: 30px; 
 }
@@ -76,7 +72,6 @@ canvas {
   margin-top: 10px;
 }
 
-/* parser UI */
 #parserBox {
   position: absolute;
   left: calc(100% + 20px);
@@ -89,7 +84,7 @@ canvas {
 
 #parserBox .button-group {
   margin-bottom: 12px;
-  align-items: center; /* ✅ vertical centering fix */
+  align-items: center;
 }
 
 .list-item {
@@ -113,7 +108,6 @@ canvas {
 <div class="container">
 
   <div class="tool">
-    <button onclick="goBack()">← Back</button>
 
     <h2>12 Pieces Collage</h2>
 
@@ -188,10 +182,6 @@ placeholder.onload = () => {
 const slotBackground = new Image();
 slotBackground.src = "../image/T_showpic_clothes_blank.png";
 
-function goBack() {
-  window.location.href = "/CollageTool/";
-}
-
 function loadImages(files) {
   return Promise.all([...files].map(file => {
     return new Promise(res => {
@@ -220,6 +210,24 @@ function drawCover(img, x, y, w, h) {
 function safe(img) {
   return img || placeholder;
 }
+
+/* DRAG & DROP */
+document.addEventListener("dragover", e => e.preventDefault());
+
+document.addEventListener("drop", e => {
+  e.preventDefault();
+
+  const files = e.dataTransfer.files;
+  if (!files || !files.length) return;
+
+  const input = document.getElementById("upload");
+
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  input.files = dt.files;
+
+  generate();
+});
 
 async function generate() {
   const files = document.getElementById("upload").files;
@@ -328,7 +336,6 @@ function draw() {
   for (let c = 0; c < 2; c++)
     drawCover(safe(images[i++]), frameX + c * stepX, y4, colW, rowH);
 
-  /* WATERMARKS */
   ctx.fillStyle = "rgba(255,255,255,0.20)";
   ctx.textAlign = "center";
   ctx.font = "bold 81px Comic Sans MS";
