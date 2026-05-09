@@ -311,6 +311,25 @@ function draw() {
 
   ctx.drawImage(slotBackground, bx, by, bw, bh);
   drawCover(safe(bigImage), bx, by, bw, bh);
+
+  /* WATERMARK RESTORED */
+  const overlayText = "@eidams_secrets @eidams_secrets";
+
+  ctx.fillStyle = "rgba(255,255,255,0.20)";
+  ctx.textAlign = "center";
+  ctx.font = "bold 79px Comic Sans MS";
+
+  [
+    frameY + 78,
+    frameY + rowH + gap + 78,
+    frameY + (rowH + gap) * 2 + 78
+  ].forEach(y => {
+    ctx.fillText(overlayText, frameX + frameW / 2, y);
+  });
+
+  ctx.fillStyle = "rgba(84,84,84,0.75)";
+  ctx.font = "bold 40px Comic Sans MS";
+  ctx.fillText("@eidams_secrets  @eidams_secrets", W / 2, H - (outerBottom / 2) + 15);
 }
 
 function generateList() {
@@ -340,7 +359,7 @@ function download() {
   link.click();
 }
 
-/* DRAG & DROP SUPPORT */
+/* DRAG & DROP (unchanged behavior) */
 document.addEventListener("dragover", e => {
   e.preventDefault();
 });
