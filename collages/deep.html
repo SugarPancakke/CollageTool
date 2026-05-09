@@ -31,10 +31,6 @@ body {
   box-sizing: border-box;
 }
 
-.tool > button:first-child {
-  margin-top: 10px;
-}
-
 h2 {
   margin-bottom: 30px;
 }
@@ -46,7 +42,6 @@ h2 {
   align-items: center;
 }
 
-/* BUTTON STYLE */
 button {
   padding: 10px 14px;
   border: none;
@@ -83,7 +78,7 @@ canvas {
 <div class="container">
 
   <div class="tool">
-    <button onclick="goBack()">← Back</button>
+
     <h2>Deep Echoes Collage</h2>
 
     <div class="controls">
@@ -107,7 +102,6 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const mm = 3.78;
-
 const gap = 2.5 * mm;
 const whiteFrame = 3.5 * mm;
 
@@ -117,10 +111,27 @@ const outerBottom = 18 * mm;
 
 let images = [];
 
-/* IMAGE ORDER */
 const getImageIndex = (r, c) => {
   return r === 0 ? c * 2 : c * 2 + 1;
 };
+
+/* DRAG & DROP */
+document.addEventListener("dragover", e => e.preventDefault());
+
+document.addEventListener("drop", e => {
+  e.preventDefault();
+
+  const files = e.dataTransfer.files;
+  if (!files || !files.length) return;
+
+  const input = document.getElementById("upload");
+
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  input.files = dt.files;
+
+  generate();
+});
 
 /* PLACEHOLDER */
 const placeholder = new Image();
@@ -131,11 +142,6 @@ placeholder.onload = () => {
   placeholderReady = true;
   draw();
 };
-
-/* BACK */
-function goBack() {
-  window.location.href = "/CollageTool/";
-}
 
 /* LOAD */
 function loadImages(files) {
@@ -152,7 +158,6 @@ function loadImages(files) {
   }));
 }
 
-/* DRAW IMAGE */
 function drawCover(img, x, y, w, h) {
   const scale = Math.max(w / img.width, h / img.height);
   const sw = w / scale;
@@ -164,12 +169,10 @@ function drawCover(img, x, y, w, h) {
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
 
-/* SAFE */
 function safe(img) {
   return img ? img : placeholder;
 }
 
-/* LABEL */
 function drawLabel(text, x, y) {
   ctx.fillStyle = "rgba(22, 22, 29, 0.7)";
   ctx.font = "bold 50px Comic Sans MS";
@@ -178,7 +181,6 @@ function drawLabel(text, x, y) {
   ctx.fillText(text, x + 12, y + 12);
 }
 
-/* GENERATE */
 async function generate() {
   const files = document.getElementById("upload").files;
   if (!files.length) return alert("Upload images first");
@@ -192,7 +194,6 @@ async function generate() {
   draw();
 }
 
-/* DRAW */
 function draw() {
   if (!placeholderReady) return;
 
