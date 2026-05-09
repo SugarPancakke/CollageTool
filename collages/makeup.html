@@ -31,10 +31,6 @@ body {
   box-sizing: border-box;
 }
 
-.tool > button:first-child {
-  margin-top: 10px;
-}
-
 h2 {
   margin-bottom: 30px;
 }
@@ -83,7 +79,6 @@ canvas {
 <div class="container">
 
   <div class="tool">
-    <button onclick="goBack()">← Back</button>
 
     <h2>Make-Up Collage</h2>
 
@@ -131,11 +126,6 @@ placeholder.onload = () => {
 const slotBackground = new Image();
 slotBackground.src = "../image/T_showpic_clothes_blank.png";
 
-/* BACK BUTTON */
-function goBack() {
-  window.location.href = "/CollageTool/";
-}
-
 /* LOAD IMAGES */
 function loadImages(files) {
   return Promise.all([...files].map(file => {
@@ -168,6 +158,24 @@ function safe(img) {
   return img ? img : placeholder;
 }
 
+/* DRAG & DROP */
+document.addEventListener("dragover", e => e.preventDefault());
+
+document.addEventListener("drop", e => {
+  e.preventDefault();
+
+  const files = e.dataTransfer.files;
+  if (!files || !files.length) return;
+
+  const input = document.getElementById("upload");
+
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  input.files = dt.files;
+
+  generate();
+});
+
 /* GENERATE */
 async function generate() {
   const files = document.getElementById("upload").files;
@@ -183,7 +191,6 @@ async function generate() {
   for (const item of loaded) {
     const name = item.name.toUpperCase();
 
-    /* PRIORITY: FU IMAGE */
     if (/S\d+FU/.test(name) && !bigImage) {
       bigImage = item.img;
     } else {
@@ -191,7 +198,6 @@ async function generate() {
     }
   }
 
-  /* FALLBACK */
   if (!bigImage && normalImages.length > 0) {
     bigImage = normalImages.shift();
   }
@@ -255,9 +261,6 @@ function draw() {
 
   drawCover(safe(bigImage), bx, by, bw, bh);
 
-  ctx.shadowBlur = 0;
-  ctx.shadowColor = "transparent";
-
   const overlayText = "@eidams_secrets  @eidams_secrets";
 
   ctx.fillStyle = "rgba(255,255,255,0.20)";
@@ -266,24 +269,17 @@ function draw() {
 
   const offset = 78;
 
-  const positions = [
+  [
     frameY + offset,
     frameY + rowH + gap + offset,
     frameY + (rowH + gap) * 2 + offset
-  ];
-
-  positions.forEach(y => {
+  ].forEach(y => {
     ctx.fillText(overlayText, frameX + frameW / 2, y);
   });
 
-  const text = "@eidams_secrets  @eidams_secrets";
-
   ctx.fillStyle = "rgba(84,84,84,0.75)";
   ctx.font = "bold 40px Comic Sans MS";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-
-  ctx.fillText(text, W / 2, H - (outerBottom / 2) + 15);
+  ctx.fillText("@eidams_secrets  @eidams_secrets", W / 2, H - (outerBottom / 2) + 15);
 }
 
 /* DOWNLOAD */
