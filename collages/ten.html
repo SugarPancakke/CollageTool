@@ -41,10 +41,6 @@ body {
   align-items: center;
 }
 
-.tool > button:first-child {
-  margin-top: 10px;
-}
-
 h2 {
   margin-bottom: 30px; 
 }
@@ -111,7 +107,6 @@ canvas {
 <div class="container">
 
   <div class="tool">
-    <button onclick="goBack()">← Back</button>
 
     <h2>10 Pieces Collage</h2>
 
@@ -186,10 +181,6 @@ placeholder.onload = () => {
 const slotBackground = new Image();
 slotBackground.src = "../image/T_showpic_clothes_blank.png";
 
-function goBack() {
-  window.location.href = "/CollageTool/";
-}
-
 function loadImages(files) {
   return Promise.all([...files].map(file => {
     return new Promise(res => {
@@ -219,7 +210,24 @@ function safe(img) {
   return img || placeholder;
 }
 
-/* ✅ CORRECT LOGIC (matches 8-piece) */
+/* DRAG & DROP */
+document.addEventListener("dragover", e => e.preventDefault());
+
+document.addEventListener("drop", e => {
+  e.preventDefault();
+
+  const files = e.dataTransfer.files;
+  if (!files || !files.length) return;
+
+  const input = document.getElementById("upload");
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  input.files = dt.files;
+
+  generate();
+});
+
+/* LOGIC */
 async function generate() {
   const files = document.getElementById("upload").files;
   if (!files.length) return alert("Upload images first");
@@ -254,19 +262,16 @@ async function generate() {
     orderedIDs.indexOf(a.id) - orderedIDs.indexOf(b.id)
   );
 
-  // 👇 EXACT same pattern as 8-piece
   const usedMapped = mapped.slice(0, 10);
 
   images = usedMapped.map(m => m.img);
   usedIDs = usedMapped.map(m => m.id);
 
-  // fill only if needed (same behavior style)
   if (images.length < 10) {
     const needed = 10 - images.length;
     images.push(...normalImages.slice(0, needed));
   }
 
-  // big image from leftovers only
   if (!bigImage && normalImages.length > 0) {
     bigImage = normalImages[normalImages.length - 1];
   }
