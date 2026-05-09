@@ -31,10 +31,6 @@ body {
   box-sizing: border-box;
 }
 
-.tool > button:first-child {
-  margin-top: 10px;
-}
-  
 h2 {
   margin-bottom: 30px;
 }
@@ -99,19 +95,17 @@ canvas {
 <div class="container">
 
   <div class="tool">
-    <button onclick="goBack()">← Back</button>
+
     <h2>Flex Collage Tool</h2>
 
     <div class="controls">
       <input type="file" id="upload" multiple accept="image/*">
 
-      <!-- COLOR -->
       <div class="pill-group" id="colorGroup">
         <div class="pill active" data-value="white">White</div>
         <div class="pill" data-value="dark">Dark</div>
       </div>
 
-      <!-- OPACITY -->
       <div class="pill-group" id="opacityGroup">
         <div class="pill active" data-value="0.05">5%</div>
         <div class="pill active" data-value="0.1">10%</div>
@@ -143,11 +137,25 @@ const outerBottom = 18 * mm;
 
 let images = [];
 let color = "white";
-let opacity = "0.1"; 
+let opacity = "0.1";
 
-function goBack() {
-  window.location.href = "/CollageTool/";
-}
+/* DRAG & DROP */
+document.addEventListener("dragover", e => e.preventDefault());
+
+document.addEventListener("drop", e => {
+  e.preventDefault();
+
+  const files = e.dataTransfer.files;
+  if (!files || !files.length) return;
+
+  const input = document.getElementById("upload");
+
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  input.files = dt.files;
+
+  generate();
+});
 
 /* COLOR PILLS */
 document.querySelectorAll("#colorGroup .pill").forEach(pill => {
@@ -222,11 +230,9 @@ function drawRowWatermark(xStart, y, rowWidth) {
 
   let alpha = parseFloat(opacity);
 
-  if (color === "white") {
-    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-  } else {
-    ctx.fillStyle = `rgba(84,84,84,${alpha})`;
-  }
+  ctx.fillStyle = color === "white"
+    ? `rgba(255,255,255,${alpha})`
+    : `rgba(84,84,84,${alpha})`;
 
   const paddingTop = 85;
   const sidePadding = 25;
@@ -234,14 +240,13 @@ function drawRowWatermark(xStart, y, rowWidth) {
   const usableWidth = rowWidth - sidePadding * 2;
 
   let baseFontSize = 60;
-  ctx.font = `bold ${baseFontSize}px "Comic Sans MS"`;
+  ctx.font = `bold ${baseFontSize}px Comic Sans MS`;
 
   const textWidth = ctx.measureText(text).width;
   const scale = usableWidth / textWidth;
   const finalFontSize = baseFontSize * scale;
 
-  ctx.font = `bold ${finalFontSize}px "Comic Sans MS"`;
-
+  ctx.font = `bold ${finalFontSize}px Comic Sans MS`;
   ctx.fillText(text, xStart + sidePadding, y + paddingTop);
 }
 
@@ -331,7 +336,6 @@ function draw() {
     for (let i = 0; i < count; i++) {
       const x = frameX + offsetX + i * (colW + gap);
       const img = safe(images[index++]);
-
       drawContain(img, x, yCursor, colW);
     }
 
@@ -340,9 +344,8 @@ function draw() {
     yCursor += rowH + gap;
   });
 
-  /* BOTTOM WATERMARK */
   ctx.fillStyle = "rgba(84,84,84,0.75)";
-  ctx.font = 'bold 40px "Comic Sans MS"';
+  ctx.font = 'bold 40px Comic Sans MS';
   ctx.textAlign = "center";
 
   ctx.fillText(
