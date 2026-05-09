@@ -114,7 +114,7 @@ canvas {
   <div class="container">
 
     <div class="tool">
-      <button onclick="goBack()">← Back</button>
+
       <h2>8 Pieces Collage</h2>
 
       <div class="controls">
@@ -188,10 +188,6 @@ placeholder.onload = () => {
 
 const slotBackground = new Image();
 slotBackground.src = "../image/T_showpic_clothes_blank.png";
-
-function goBack() {
-  window.location.href = "/CollageTool/";
-}
 
 function loadImages(files) {
   return Promise.all([...files].map(file => {
@@ -315,24 +311,6 @@ function draw() {
 
   ctx.drawImage(slotBackground, bx, by, bw, bh);
   drawCover(safe(bigImage), bx, by, bw, bh);
-
-  const overlayText = "@eidams_secrets @eidams_secrets";
-
-  ctx.fillStyle = "rgba(255,255,255,0.20)";
-  ctx.textAlign = "center";
-  ctx.font = "bold 79px Comic Sans MS";
-
-  [
-    frameY + 78,
-    frameY + rowH + gap + 78,
-    frameY + (rowH + gap) * 2 + 78
-  ].forEach(y => {
-    ctx.fillText(overlayText, frameX + frameW / 2, y);
-  });
-
-  ctx.fillStyle = "rgba(84,84,84,0.75)";
-  ctx.font = "bold 40px Comic Sans MS";
-  ctx.fillText("@eidams_secrets  @eidams_secrets", W / 2, H - (outerBottom / 2) + 15);
 }
 
 function generateList() {
@@ -361,6 +339,26 @@ function download() {
   link.href = canvas.toDataURL("image/png");
   link.click();
 }
+
+/* DRAG & DROP SUPPORT */
+document.addEventListener("dragover", e => {
+  e.preventDefault();
+});
+
+document.addEventListener("drop", e => {
+  e.preventDefault();
+
+  const files = e.dataTransfer.files;
+  if (!files || !files.length) return;
+
+  const input = document.getElementById("upload");
+
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  input.files = dt.files;
+
+  generate();
+});
 </script>
 
 </body>
