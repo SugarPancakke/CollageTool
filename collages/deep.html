@@ -2,309 +2,699 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Deep Echoes Collage</title>
+<title>Data Diff Viewer</title>
 
 <style>
 body {
   margin: 0;
-  background: #391823;
-  font-family: Arial;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
+  background: #322d2d;
   color: white;
+  font-family: monospace;
 }
 
-.container {
-  width: 900px;
+/* TOP BAR */
+.topbar {
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: #2a2525;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* PUSH SEARCH TO FAR RIGHT */
+.spacer {
+  flex: 1;
+}
+
+.upload-label {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  font-size: 12px;
+  color: #ccc;
 }
 
-.tool {
-  background: #643545;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-h2 {
-  margin-bottom: 30px;
-}
-
-.controls {
-  display: flex;
-  gap: 10px;
-  flex-wrap: nowrap; 
-  align-items: center;
-}
-
-button {
-  padding: 10px 14px;
-  border: none;
-  border-radius: 8px;
-  background: #db8b9a;
+.upload-label input {
+  background: #3d3838;
   color: white;
-  cursor: pointer;
-  transition: 0.2s ease;
+  border: none;
+  padding: 6px;
+}
+
+/* SEARCH */
+.search-box {
+  background: #3d3838;
+  color: white;
+  border: none;
+  padding: 10px 12px;
   font-size: 14px;
-  white-space: nowrap; 
+  font-family: monospace;
+  width: 240px;
+  outline: none;
 }
 
-button:hover {
-  background: #c06f7f;
+.search-box::placeholder {
+  color: #aaa;
 }
 
-.button-group {
+/* NAV BUTTONS */
+.nav-btn {
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+#matchCounter {
+  min-width: 60px;
+  text-align: center;
+  color: #ccc;
+  font-size: 14px;
+}
+
+/* BUTTON */
+button {
+  background: #4d4747;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: monospace;
+}
+
+button:active {
+  transform: translateY(1px);
+  background: #3f3a3a;
+}
+
+/* FILTER WRAPPER */
+.filter {
+  position: relative;
+}
+
+/* FILTER MENU */
+.filter-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: #2a2525;
+  border: 1px solid #444;
+  padding: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 1100;
+}
+
+.filter-menu label {
   display: flex;
-  gap: 10px;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px;
 }
 
-canvas {
-  display: block;
-  transform: scale(0.43);
-  transform-origin: center top;
-  margin-top: 10px;
+.filter-menu input[type="checkbox"] {
+  accent-color: #888;
 }
 
-/* DARK SCROLLBAR */
-::-webkit-scrollbar {
+/* LAYOUT */
+.container {
+  display: flex;
+  height: calc(100vh - 74px);
+  overflow: hidden;
+}
+
+/* LEFT PANEL */
+.left {
+  width: 25%;
+  background: #2b2626;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid #444;
+  position: relative;
+  z-index: 1;
+}
+
+.file {
+  position: relative;
+  padding: 8px 34px 8px 8px;
+  border-bottom: 1px solid #3d3838;
+  cursor: pointer;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.file:hover {
+  background: #3d3838;
+}
+
+.file.active {
+  background: #4d4747;
+}
+
+/* STATUS DOT */
+.dot {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.modified { background: #fbc02d; }
+.added { background: #43a047; }
+.removed { background: #e53935; }
+.unchanged { display: none; }
+
+/* RIGHT VIEWER */
+.right {
+  width: 75%;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* BLOCKS */
+.block {
+  margin-bottom: 2px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #2a2525;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.add {
+  background: rgba(46,125,50,0.25);
+  border-left: 3px solid #2e7d32;
+}
+
+.remove {
+  background: rgba(183,28,28,0.25);
+  border-left: 3px solid #b71c1c;
+  text-decoration: line-through;
+  opacity: 0.85;
+}
+
+/* SEARCH HIGHLIGHT */
+.highlight {
+  background: #ffd54f;
+  color: black;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.active-highlight {
+  background: #ff9800;
+  color: black;
+}
+
+/* DARK SCROLLBARS */
+.left::-webkit-scrollbar,
+.right::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-::-webkit-scrollbar-track {
-  background: #1f1f1f;
+.left::-webkit-scrollbar-track,
+.right::-webkit-scrollbar-track {
+  background: #2a2525;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 6px;
+.left::-webkit-scrollbar-thumb,
+.right::-webkit-scrollbar-thumb {
+  background: #4a4040;
+  border-radius: 8px;
+  border: 2px solid #2a2525;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #777;
+.left::-webkit-scrollbar-thumb:hover,
+.right::-webkit-scrollbar-thumb:hover {
+  background: #5a4d4d;
 }
 
-/* Firefox */
-* {
-  scrollbar-color: #555 #1f1f1f;
+.left,
+.right {
+  scrollbar-width: thin;
+  scrollbar-color: #4a4040 #2a2525;
+}
+
+/* ========================= */
+/* ✅ ADDED DRAG & DROP ONLY */
+/* ========================= */
+
+.upload-label.dragover {
+  outline: 2px dashed #fbc02d;
+  outline-offset: 4px;
 }
 </style>
-
 </head>
 
 <body>
 
-<div class="container">
+<div class="topbar">
 
-  <div class="tool">
+  <label class="upload-label">
+    Old Folder:
+    <input type="file" id="oldFiles" webkitdirectory multiple>
+  </label>
 
-    <h2>Deep Echoes Collage</h2>
+  <label class="upload-label">
+    New Folder:
+    <input type="file" id="newFiles" webkitdirectory multiple>
+  </label>
 
-    <div class="controls">
+  <button onclick="loadFiles()">Compare</button>
 
-      <input type="file" id="upload" multiple accept="image/*">
+  <div class="spacer"></div>
 
-      <div class="button-group">
-        <button onclick="generate()">Generate</button>
-        <button onclick="download()">Download PNG</button>
-      </div>
+  <div class="filter">
+    <button class="nav-btn" onclick="toggleFilter()">⚙</button>
 
+    <div class="filter-menu" id="filterMenu">
+      <label><input type="checkbox" checked value="added">Added</label>
+      <label><input type="checkbox" checked value="modified">Modified</label>
+      <label><input type="checkbox" checked value="removed">Removed</label>
+      <label><input type="checkbox" checked value="unchanged">Unchanged</label>
     </div>
   </div>
 
-<canvas id="canvas" width="2500" height="1220"></canvas>
+  <input
+    type="text"
+    id="searchBox"
+    class="search-box"
+    placeholder="Search..."
+    oninput="runSearch()"
+  >
+
+  <button class="nav-btn" onclick="gotoMatch(currentMatch - 1)">↑</button>
+  <button class="nav-btn" onclick="gotoMatch(currentMatch + 1)">↓</button>
+
+  <div id="matchCounter">0 / 0</div>
 
 </div>
 
+<div class="container">
+  <div class="left" id="fileList"></div>
+  <div class="right" id="viewer">Select file</div>
+</div>
+
 <script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+let oldData = {};
+let newData = {};
+let selectedName = null;
 
-const mm = 3.78;
-const gap = 2.5 * mm;
-const whiteFrame = 3.5 * mm;
+let matches = [];
+let currentMatch = 0;
 
-const outerTop = 6 * mm;
-const outerSide = 6 * mm;
-const outerBottom = 18 * mm;
+function toggleFilter() {
+  const menu = document.getElementById("filterMenu");
+  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+}
 
-let images = [];
-
-const getImageIndex = (r, c) => {
-  return r === 0 ? c * 2 : c * 2 + 1;
-};
-
-/* DRAG & DROP */
-document.addEventListener("dragover", e => e.preventDefault());
-
-document.addEventListener("drop", e => {
-  e.preventDefault();
-
-  const files = e.dataTransfer.files;
-  if (!files || !files.length) return;
-
-  const input = document.getElementById("upload");
-
-  const dt = new DataTransfer();
-  for (const f of files) dt.items.add(f);
-  input.files = dt.files;
-
-  generate();
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".filter")) {
+    document.getElementById("filterMenu").style.display = "none";
+  }
 });
 
-/* PLACEHOLDER */
-const placeholder = new Image();
-placeholder.src = "../image/T_showpic_clothes_blank.png";
+function updateVisibleFiles() {
 
-let placeholderReady = false;
-placeholder.onload = () => {
-  placeholderReady = true;
-  draw();
-};
+  const search = document
+    .getElementById("searchBox")
+    .value
+    .trim()
+    .toLowerCase();
 
-/* LOAD */
-function loadImages(files) {
-  return Promise.all([...files].map(file => {
-    return new Promise(res => {
-      const r = new FileReader();
-      r.onload = e => {
-        const img = new Image();
-        img.onload = () => res(img);
-        img.src = e.target.result;
-      };
-      r.readAsDataURL(file);
-    });
-  }));
+  const allowed = [...document.querySelectorAll("#filterMenu input:checked")]
+    .map(e => e.value);
+
+  document.querySelectorAll(".file").forEach(file => {
+
+    const name = file.dataset.name;
+    const status = file.dataset.status;
+
+    const oldText = (oldData[name] || "").toLowerCase();
+    const newText = (newData[name] || "").toLowerCase();
+
+    const matchesSearch =
+      !search ||
+      oldText.includes(search) ||
+      newText.includes(search);
+
+    const matchesFilter =
+      allowed.includes(status);
+
+    file.style.display =
+      matchesSearch && matchesFilter
+        ? ""
+        : "none";
+  });
 }
 
-function drawCover(img, x, y, w, h) {
-  const scale = Math.max(w / img.width, h / img.height);
-  const sw = w / scale;
-  const sh = h / scale;
-
-  const sx = (img.width - sw) / 2;
-  const sy = (img.height - sh) / 2;
-
-  ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+function applyFilters() {
+  updateVisibleFiles();
 }
 
-function safe(img) {
-  return img ? img : placeholder;
+document.querySelectorAll("#filterMenu input").forEach(cb => {
+  cb.addEventListener("change", applyFilters);
+});
+
+/* ---------------- FILE LOGIC (UNCHANGED) ---------------- */
+
+function cleanText(t) {
+  return t.replace(/\r/g, "");
 }
 
-function drawLabel(text, x, y) {
-  ctx.fillStyle = "rgba(22, 22, 29, 0.7)";
-  ctx.font = "bold 50px Comic Sans MS";
-  ctx.textBaseline = "top";
-  ctx.textAlign = "left";
-  ctx.fillText(text, x + 12, y + 12);
+function normalize(file) {
+  const path = file.webkitRelativePath || file.name;
+  return path.includes("/") ? path.split("/").slice(1).join("/") : path;
 }
 
-async function generate() {
-  const files = document.getElementById("upload").files;
-  if (!files.length) return alert("Upload images first");
+function readFiles(files, store, cb) {
+  let done = 0;
+  if (!files.length) return cb();
 
-  images = await loadImages(files);
+  for (let f of files) {
+    const r = new FileReader();
 
-  while (images.length < 12) {
-    images.push(null);
+    r.onload = e => {
+      store[normalize(f)] = cleanText(e.target.result);
+      done++;
+      if (done === files.length) cb();
+    };
+
+    r.readAsText(f);
   }
-
-  draw();
 }
 
-function draw() {
-  if (!placeholderReady) return;
+function loadFiles() {
+  oldData = {};
+  newData = {};
+  selectedName = null;
 
-  const W = canvas.width;
-  const H = canvas.height;
+  readFiles(oldFiles.files, oldData, () => {
+    readFiles(newFiles.files, newData, compare);
+  });
+}
 
-  ctx.fillStyle = "#16161d";
-  ctx.fillRect(0, 0, W, H);
+function compare() {
+  const list = document.getElementById("fileList");
+  list.innerHTML = "";
 
-  const innerX = outerSide;
-  const innerY = outerTop;
-  const innerW = W - outerSide * 2;
-  const innerH = H - outerTop - outerBottom;
+  const all = new Set([...Object.keys(oldData), ...Object.keys(newData)]);
 
-  ctx.fillStyle = "white";
-  ctx.fillRect(innerX, innerY, innerW, innerH);
+  all.forEach(name => {
 
-  const frameX = innerX + whiteFrame;
-  const frameY = innerY + whiteFrame;
-  const frameW = innerW - whiteFrame * 2;
-  const frameH = innerH - whiteFrame * 2;
+    const o = oldData[name];
+    const n = newData[name];
 
-  const cols = 6;
-  const rows = 2;
+    let status = "unchanged";
+    if (!o) status = "added";
+    else if (!n) status = "removed";
+    else if (o !== n) status = "modified";
 
-  const colW = (frameW - gap * (cols - 1)) / cols;
-  const rowH = (frameH - gap * (rows - 1)) / rows;
+    const div = document.createElement("div");
+    div.className = "file";
+    div.dataset.name = name;
+    div.dataset.status = status;
 
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
+    div.onclick = () => show(name);
 
-      const imgIndex = getImageIndex(r, c);
+    div.innerHTML = `
+      <span>${name}</span>
+      <span class="dot ${status}"></span>
+    `;
 
-      const x = frameX + c * (colW + gap);
-      const y = frameY + r * (rowH + gap);
+    list.appendChild(div);
+  });
 
-      drawCover(
-        safe(images[imgIndex]),
-        x,
-        y,
-        colW,
-        rowH
-      );
+  runSearch();
+  applyFilters();
+}
+
+function runSearch() {
+
+  updateVisibleFiles();
+
+  const search = document
+    .getElementById("searchBox")
+    .value
+    .trim()
+    .toLowerCase();
+
+  if (selectedName) {
+
+    const oldText = (oldData[selectedName] || "").toLowerCase();
+    const newText = (newData[selectedName] || "").toLowerCase();
+
+    const stillVisible =
+      !search ||
+      oldText.includes(search) ||
+      newText.includes(search);
+
+    if (stillVisible) {
+      show(selectedName);
+    } else {
+      document.getElementById("viewer").innerHTML =
+        "No matching text in selected file";
+
+      document.getElementById("matchCounter").textContent =
+        "0 / 0";
+    }
+  }
+}
+
+/* ---------------- DRAG & DROP (ONLY ADDITION) ---------------- */
+
+function enableDrop(labelText, inputId) {
+  const input = document.getElementById(inputId);
+
+  const zone = [...document.querySelectorAll(".upload-label")]
+    .find(l => l.textContent.includes(labelText));
+
+  if (!zone) return;
+
+  zone.addEventListener("dragover", e => {
+    e.preventDefault();
+    zone.classList.add("dragover");
+  });
+
+  zone.addEventListener("dragleave", () => {
+    zone.classList.remove("dragover");
+  });
+
+  zone.addEventListener("drop", e => {
+    e.preventDefault();
+    zone.classList.remove("dragover");
+
+    const files = [];
+    const items = e.dataTransfer.items;
+
+    for (let item of items) {
+      const entry = item.webkitGetAsEntry?.();
+      if (entry) readEntry(entry, files);
+    }
+
+    setTimeout(() => {
+      const dt = new DataTransfer();
+      files.forEach(f => dt.items.add(f));
+      input.files = dt.files;
+    }, 200);
+  });
+}
+
+function readEntry(entry, files) {
+  if (entry.isFile) {
+    entry.file(f => files.push(f));
+  } else if (entry.isDirectory) {
+    const reader = entry.createReader();
+    reader.readEntries(entries => {
+      entries.forEach(e => readEntry(e, files));
+    });
+  }
+}
+
+enableDrop("Old Folder", "oldFiles");
+enableDrop("New Folder", "newFiles");
+
+/* ---------------- EVERYTHING BELOW UNCHANGED ---------------- */
+
+function show(name) {
+
+  selectedName = name;
+
+  document.querySelectorAll(".file").forEach(el => {
+    el.classList.toggle("active", el.dataset.name === name);
+  });
+
+  const a = oldData[name] || "";
+  const b = newData[name] || "";
+  const viewer = document.getElementById("viewer");
+
+  const A = a.split("\n");
+  const B = b.split("\n");
+
+  viewer.innerHTML = diffBlocks(A, B);
+
+  highlightSearch();
+}
+
+function diffBlocks(a, b) {
+
+  const dp = Array(a.length + 1)
+    .fill(0)
+    .map(() => Array(b.length + 1).fill(0));
+
+  for (let i = a.length - 1; i >= 0; i--) {
+    for (let j = b.length - 1; j >= 0; j--) {
+      if (a[i] === b[j]) {
+        dp[i][j] = dp[i + 1][j + 1] + 1;
+      } else {
+        dp[i][j] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+      }
     }
   }
 
-  drawLabel("Base:", frameX + 15, frameY + 15);
-  drawLabel("Glow-up:", frameX + 15, frameY + rowH + gap + 15);
+  let i = 0, j = 0;
+  let out = "";
 
-  const overlayText = "@eidams_secrets @eidams_secrets @eidams_secrets";
+  while (i < a.length && j < b.length) {
 
-  ctx.fillStyle = "rgba(255,255,255,0.20)";
-  ctx.textAlign = "center";
-  ctx.font = "bold 79px Comic Sans MS";
+    if (a[i] === b[j]) {
+      out += wrap(a[i], "");
+      i++; j++;
+    }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      out += wrap(a[i], "remove");
+      i++;
+    }
+    else {
+      out += wrap(b[j], "add");
+      j++;
+    }
+  }
 
-  const offset = 85;
+  while (i < a.length) out += wrap(a[i++], "remove");
+  while (j < b.length) out += wrap(b[j++], "add");
 
-  const positions = [
-    frameY + rowH - offset,
-    frameY + rowH + gap + rowH - offset
-  ];
+  return out;
+}
 
-  positions.forEach(y => {
-    ctx.fillText(overlayText, frameX + frameW / 2, y);
+function wrap(text, type) {
+  if (text === "") return `<div class="block ${type}">&nbsp;</div>`;
+  return `<div class="block ${type}">${escapeHtml(text)}</div>`;
+}
+
+function highlightSearch() {
+
+  const search = document
+    .getElementById("searchBox")
+    .value
+    .trim();
+
+  matches = [];
+  currentMatch = 0;
+
+  if (!search) {
+    document.getElementById("matchCounter").textContent =
+      "0 / 0";
+    return;
+  }
+
+  const blocks = document.querySelectorAll(".block");
+
+  blocks.forEach(block => {
+
+    const original = block.textContent;
+
+    const regex = new RegExp(
+      escapeRegExp(search),
+      "gi"
+    );
+
+    block.innerHTML = escapeHtml(original).replace(
+      regex,
+      match => `<span class="highlight">${match}</span>`
+    );
   });
 
-  const text = "@eidams_secrets  @eidams_secrets  @eidams_secrets";
+  matches = [...document.querySelectorAll(".highlight")];
 
-  ctx.fillStyle = "rgba(84,84,84,0.75)";
-  ctx.font = "bold 40px Comic Sans MS";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-
-  let yText = H - (outerBottom / 2) + 15;
-
-  if (yText > H - 10) yText = H - 10;
-  if (yText < 40) yText = 40;
-
-  ctx.fillText(text, W / 2, yText);
+  if (matches.length) {
+    gotoMatch(0);
+  }
+  else {
+    document.getElementById("matchCounter").textContent =
+      "0 / 0";
+  }
 }
 
-function download() {
-  const link = document.createElement("a");
-  link.download = "collage.png";
-  link.href = canvas.toDataURL("image/png");
-  link.click();
+function gotoMatch(index) {
+
+  if (!matches.length) return;
+
+  matches.forEach(m => {
+    m.classList.remove("active-highlight");
+  });
+
+  currentMatch =
+    (index + matches.length) % matches.length;
+
+  const el = matches[currentMatch];
+
+  el.classList.add("active-highlight");
+
+  el.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  document.getElementById("matchCounter").textContent =
+    `${currentMatch + 1} / ${matches.length}`;
 }
+
+function escapeRegExp(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function escapeHtml(t) {
+  return t
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+}
+
+document.addEventListener("keydown", e => {
+
+  if (e.key === "Enter") {
+
+    if (e.shiftKey) {
+      gotoMatch(currentMatch - 1);
+    }
+    else {
+      gotoMatch(currentMatch + 1);
+    }
+  }
+
+  if (e.key === "F3") {
+    e.preventDefault();
+    gotoMatch(currentMatch + 1);
+  }
+
+  if (e.ctrlKey && e.key.toLowerCase() === "f") {
+    e.preventDefault();
+    document.getElementById("searchBox").focus();
+  }
+});
 </script>
 
 </body>
