@@ -209,7 +209,10 @@ placeholder.src = "../image/T_showpic_clothes_blank.png";
 
 placeholder.onload = () => {
   placeholderReady = true;
-  draw();
+
+  document.fonts.ready.then(() => {
+    draw();
+  });
 };
 
 const slotBackground = new Image();
