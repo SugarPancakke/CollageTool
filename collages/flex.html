@@ -264,13 +264,13 @@ function drawRowWatermark(xStart, y, rowWidth) {
   const usableWidth = rowWidth - sidePadding * 2;
 
   let baseFontSize = 60;
-  ctx.font = `bold ${baseFontSize}px Comic Sans MS`;
+  ctx.font = `bold ${baseFontSize}px Segoe UI`;
 
   const textWidth = ctx.measureText(text).width;
   const scale = usableWidth / textWidth;
   const finalFontSize = baseFontSize * scale;
 
-  ctx.font = `bold ${finalFontSize}px Comic Sans MS`;
+  ctx.font = `bold ${finalFontSize}px Segoe UI`;
   ctx.fillText(text, xStart + sidePadding, y + paddingTop);
 }
 
@@ -325,7 +325,7 @@ function draw() {
 
   canvas.height = totalHeight;
 
-  ctx.fillStyle = "#16161d";
+  ctx.fillStyle = "#fff5f5";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = "white";
@@ -368,8 +368,8 @@ function draw() {
     yCursor += rowH + gap;
   });
 
-  ctx.fillStyle = "rgba(84,84,84,0.75)";
-  ctx.font = 'bold 40px Comic Sans MS';
+  ctx.fillStyle = "rgba(194,60,60,0.45)";
+  ctx.font = "bold 40px 'Segoe UI'";
   ctx.textAlign = "center";
 
   ctx.fillText(
