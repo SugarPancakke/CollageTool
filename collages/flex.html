@@ -205,7 +205,7 @@ document.querySelectorAll("#opacityGroup .pill").forEach(pill => {
 
 /* PLACEHOLDER */
 const placeholder = new Image();
-placeholder.src = "../image/T_showpic_clothes_blank.png";
+placeholder.src = "image/T_showpic_clothes_blank.png";
 
 let placeholderReady = false;
 placeholder.onload = () => {
@@ -217,18 +217,27 @@ function loadImages(files) {
   return Promise.all([...files].map(file => {
     return new Promise(res => {
       const r = new FileReader();
+
       r.onload = e => {
         const img = new Image();
-        img.onload = () => res(img);
+
+        img.onload = () => {
+          res({
+            img: img,
+            name: file.name
+          });
+        };
+
         img.src = e.target.result;
       };
+
       r.readAsDataURL(file);
     });
   }));
 }
 
-function safe(img) {
-  return img ? img : placeholder;
+function safe(item) {
+  return item ? item : { img: placeholder, name: "" };
 }
 
 async function generate() {
@@ -308,8 +317,9 @@ function draw() {
     let maxH = 0;
 
     for (let i = 0; i < count; i++) {
-      const img = safe(images[index++]);
-      const h = colW * (img.height / img.width);
+      const item = safe(images[index++]);
+      const h = colW * (item.img.height / item.img.width);
+
       if (h > maxH) maxH = h;
     }
 
@@ -359,8 +369,16 @@ function draw() {
 
     for (let i = 0; i < count; i++) {
       const x = frameX + offsetX + i * (colW + gap);
-      const img = safe(images[index++]);
-      drawContain(img, x, yCursor, colW);
+
+      const item = safe(images[index++]);
+
+      /* draw blank underneath ONLY for suit images */
+      if (item.name.startsWith("T_showpic_suit_")) {
+        drawContain(placeholder, x, yCursor, colW);
+      }
+
+      /* actual image */
+      drawContain(item.img, x, yCursor, colW);
     }
 
     drawRowWatermark(rowStartX, yCursor, rowWidth);
