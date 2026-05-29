@@ -215,7 +215,7 @@ async function generate() {
   for (const item of loaded) {
     const name = item.name.toUpperCase();
 
-    if (/S\d+FU/.test(name) && !bigImage) {
+    if (/S\d+FU|PFU\d+/.test(name) && !bigImage) {
       bigImage = item.img;
     } else {
       normalImages.push(item.img);
