@@ -133,6 +133,7 @@ canvas {
       <div class="pill-group" id="opacityGroup">
         <div class="pill" data-value="0.05">5%</div>
         <div class="pill active" data-value="0.1">10%</div>
+        <div class="pill" data-value="0.20">20%</div>
         <div class="pill" data-value="0.25">25%</div>
       </div>
 
@@ -206,7 +207,7 @@ document.querySelectorAll("#opacityGroup .pill").forEach(pill => {
 /* PLACEHOLDER */
 const placeholder = new Image();
 placeholder.src = "../image/T_showpic_clothes_blank.png";
-  
+
 let placeholderReady = false;
 placeholder.onload = () => {
   placeholderReady = true;
@@ -372,9 +373,29 @@ function draw() {
 
       const item = safe(images[index++]);
 
+      /* actual image height */
+      const imgHeight = colW * (item.img.height / item.img.width);
+
       /* draw blank underneath ONLY for suit images */
       if (item.name.startsWith("T_showpic_suit_")) {
-        drawContain(placeholder, x, yCursor, colW);
+
+        /* keep placeholder ratio */
+        const phRatio = placeholder.width / placeholder.height;
+
+        /* resize placeholder to match image HEIGHT */
+        const phHeight = imgHeight;
+        const phWidth = phHeight * phRatio;
+
+        /* center it behind the image */
+        const phX = x + (colW - phWidth) / 2;
+
+        ctx.drawImage(
+          placeholder,
+          phX,
+          yCursor,
+          phWidth,
+          phHeight
+        );
       }
 
       /* actual image */
