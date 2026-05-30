@@ -379,25 +379,29 @@ function draw() {
       /* draw blank underneath ONLY for suit images */
       if (item.name.startsWith("T_showpic_suit_")) {
 
-        /* keep placeholder ratio */
-        const phRatio = placeholder.width / placeholder.height;
+     const phRatio = placeholder.width / placeholder.height;
 
-        /* resize placeholder to match image HEIGHT */
-        const phHeight = imgHeight;
-        const phWidth = phHeight * phRatio;
+const phHeight = imgHeight;
+const phWidth = phHeight * phRatio;
 
-        /* center it behind the image */
-        const phX = x + (colW - phWidth) / 2;
+const phX = x + (colW - phWidth) / 2;
 
-        ctx.drawImage(
-          placeholder,
-          phX,
-          yCursor,
-          phWidth,
-          phHeight
-        );
-      }
+/* clip placeholder to the column width */
+ctx.save();
 
+ctx.beginPath();
+ctx.rect(x, yCursor, colW, imgHeight);
+ctx.clip();
+
+ctx.drawImage(
+  placeholder,
+  phX,
+  yCursor,
+  phWidth,
+  phHeight
+);
+
+ctx.restore();
       /* actual image */
       drawContain(item.img, x, yCursor, colW);
     }
