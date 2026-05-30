@@ -376,32 +376,34 @@ function draw() {
       /* actual image height */
       const imgHeight = colW * (item.img.height / item.img.width);
 
-      /* draw blank underneath ONLY for suit images */
-      if (item.name.startsWith("T_showpic_suit_")) {
+/* draw blank underneath ONLY for suit images */
+if (item.name.startsWith("T_showpic_suit_")) {
 
-     const phRatio = placeholder.width / placeholder.height;
+  const phRatio = placeholder.width / placeholder.height;
 
-const phHeight = imgHeight;
-const phWidth = phHeight * phRatio;
+  const phHeight = imgHeight;
+  const phWidth = phHeight * phRatio;
 
-const phX = x + (colW - phWidth) / 2;
+  const phX = x + (colW - phWidth) / 2;
 
-/* clip placeholder to the column width */
-ctx.save();
+  /* clip placeholder to stay inside column */
+  ctx.save();
 
-ctx.beginPath();
-ctx.rect(x, yCursor, colW, imgHeight);
-ctx.clip();
+  ctx.beginPath();
+  ctx.rect(x, yCursor, colW, imgHeight);
+  ctx.clip();
 
-ctx.drawImage(
-  placeholder,
-  phX,
-  yCursor,
-  phWidth,
-  phHeight
-);
+  ctx.drawImage(
+    placeholder,
+    phX,
+    yCursor,
+    phWidth,
+    phHeight
+  );
 
-ctx.restore();
+  ctx.restore();
+}
+
       /* actual image */
       drawContain(item.img, x, yCursor, colW);
     }
