@@ -203,13 +203,13 @@ function drawLabel(text, x, y) {
   ctx.textAlign = "left";
 
   // Pink outline
-  ctx.strokeStyle = "rgb(230, 170, 170)";
+  ctx.strokeStyle = "rgb(230, 170, 170, 0.7)";
   ctx.lineWidth = 8;
   ctx.lineJoin = "round";
   ctx.strokeText(text, x + 12, y + 12);
 
   // White fill
-  ctx.fillStyle = "white";
+  ctx.fillStyle = "rgb(255, 255, 255, 0.7)";
   ctx.fillText(text, x + 12, y + 12);
 }
 
