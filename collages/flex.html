@@ -107,7 +107,6 @@ canvas {
   background: #777;
 }
 
-/* Firefox */
 * {
   scrollbar-color: #555 #1f1f1f;
 }
@@ -204,7 +203,7 @@ document.querySelectorAll("#opacityGroup .pill").forEach(pill => {
   };
 });
 
-/* PLACEHOLDER */
+/* BACKGROUND IMG */
 const placeholder = new Image();
 placeholder.src = "../image/T_showpic_clothes_blank.png";
 
@@ -373,10 +372,9 @@ function draw() {
 
       const item = safe(images[index++]);
 
-      /* actual image height */
+  
       const imgHeight = colW * (item.img.height / item.img.width);
 
-/* draw blank underneath ONLY for suit images */
 if (item.name.startsWith("T_showpic_suit_")) {
 
   const phRatio = placeholder.width / placeholder.height;
@@ -386,7 +384,6 @@ if (item.name.startsWith("T_showpic_suit_")) {
 
   const phX = x + (colW - phWidth) / 2;
 
-  /* clip placeholder to stay inside column */
   ctx.save();
 
   ctx.beginPath();
@@ -404,7 +401,6 @@ if (item.name.startsWith("T_showpic_suit_")) {
   ctx.restore();
 }
 
-      /* actual image */
       drawContain(item.img, x, yCursor, colW);
     }
 
