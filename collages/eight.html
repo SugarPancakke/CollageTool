@@ -403,6 +403,28 @@ document.addEventListener("drop", e => {
 
   generate();
 });
+
+  canvas.addEventListener("click", async () => {
+  try {
+    const blob = await new Promise(resolve =>
+      canvas.toBlob(resolve, "image/png")
+    );
+
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        "image/png": blob
+      })
+    ]);
+
+    const status = document.getElementById("copyStatus");
+    status.innerText = "Image copied!";
+    setTimeout(() => status.innerText = "", 1200);
+
+  } catch (err) {
+    console.error(err);
+    alert("Image copy not supported in this browser.");
+  }
+});
 </script>
 
 </body>
