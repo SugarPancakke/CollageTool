@@ -76,7 +76,6 @@ canvas {
   transform: scale(0.43);
   transform-origin: center top;
   margin-top: 10px;
-  cursor: pointer;
 }
 
 #parserBox {
@@ -384,27 +383,7 @@ function download() {
   link.click();
 }
 
-/* DRAG & DROP (unchanged behavior) */
-document.addEventListener("dragover", e => {
-  e.preventDefault();
-});
-
-document.addEventListener("drop", e => {
-  e.preventDefault();
-
-  const files = e.dataTransfer.files;
-  if (!files || !files.length) return;
-
-  const input = document.getElementById("upload");
-
-  const dt = new DataTransfer();
-  for (const f of files) dt.items.add(f);
-  input.files = dt.files;
-
-  generate();
-});
-
-  canvas.addEventListener("click", async () => {
+async function copyImage() {
   try {
     const blob = await new Promise(resolve =>
       canvas.toBlob(resolve, "image/png")
@@ -424,6 +403,26 @@ document.addEventListener("drop", e => {
     console.error(err);
     alert("Image copy not supported in this browser.");
   }
+}
+
+/* DRAG & DROP (unchanged behavior) */
+document.addEventListener("dragover", e => {
+  e.preventDefault();
+});
+
+document.addEventListener("drop", e => {
+  e.preventDefault();
+
+  const files = e.dataTransfer.files;
+  if (!files || !files.length) return;
+
+  const input = document.getElementById("upload");
+
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  input.files = dt.files;
+
+  generate();
 });
 </script>
 
