@@ -147,7 +147,6 @@ canvas {
         <div class="button-group">
           <button onclick="generate()">Generate</button>
           <button onclick="download()">Download PNG</button>
-          <button onclick="copyImage()">Copy PNG</button>
         </div>
       </div>
     </div>
@@ -382,28 +381,6 @@ function download() {
   link.download = "collage.png";
   link.href = canvas.toDataURL("image/png");
   link.click();
-}
-
-async function copyImage() {
-  try {
-    const blob = await new Promise(resolve =>
-      canvas.toBlob(resolve, "image/png")
-    );
-
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        "image/png": blob
-      })
-    ]);
-
-    const status = document.getElementById("copyStatus");
-    status.innerText = "Image copied!";
-    setTimeout(() => status.innerText = "", 1200);
-
-  } catch (err) {
-    console.error(err);
-    alert("Image copy not supported in this browser.");
-  }
 }
 
 /* DRAG & DROP (unchanged behavior) */
