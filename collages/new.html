@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebP to PNG</title>
+</head>
+<body>
+    <input type="file" id="files" accept=".webp,image/webp" multiple>
+
+    <script>
+        document.getElementById('files').addEventListener('change', async (e) => {
+            for (const file of e.target.files) {
+                const img = new Image();
+                img.src = URL.createObjectURL(file);
+
+                await new Promise(resolve => {
+                    img.onload = resolve;
+                });
+
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                canvas.getContext('2d').drawImage(img, 0, 0);
+
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                a.download = file.name.replace(/\.webp$/i, '.png');
+                a.click();
+
+                URL.revokeObjectURL(img.src);
+            }
+        });
+    </script>
+</body>
+</html>
